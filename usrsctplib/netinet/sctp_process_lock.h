@@ -60,6 +60,9 @@
 #define SCTP_INP_INFO_RUNLOCK()
 #define SCTP_INP_INFO_WLOCK()
 #define SCTP_INP_INFO_WUNLOCK()
+#define SCTP_INP_INFO_LOCK_ASSERT()
+#define SCTP_INP_INFO_RLOCK_ASSERT()
+#define SCTP_INP_INFO_WLOCK_ASSERT()
 #define SCTP_INP_INFO_LOCK_DESTROY()
 #define SCTP_IPI_COUNT_INIT()
 #define SCTP_IPI_COUNT_DESTROY()
@@ -69,6 +72,9 @@
 #define SCTP_INP_INFO_RUNLOCK()
 #define SCTP_INP_INFO_WLOCK()
 #define SCTP_INP_INFO_WUNLOCK()
+#define SCTP_INP_INFO_LOCK_ASSERT()
+#define SCTP_INP_INFO_RLOCK_ASSERT()
+#define SCTP_INP_INFO_WLOCK_ASSERT()
 #define SCTP_INP_INFO_LOCK_DESTROY()
 #define SCTP_IPI_COUNT_INIT()
 #define SCTP_IPI_COUNT_DESTROY()
@@ -78,6 +84,7 @@
 #define SCTP_TCB_SEND_LOCK_DESTROY(_tcb)
 #define SCTP_TCB_SEND_LOCK(_tcb)
 #define SCTP_TCB_SEND_UNLOCK(_tcb)
+#define SCTP_TCB_SEND_LOCK_ASSERT(_tcb)
 
 /* Lock for INP */
 #define SCTP_INP_LOCK_INIT(_inp)
@@ -142,6 +149,9 @@
 	LeaveCriticalSection(&SCTP_BASE_INFO(ipi_ep_mtx))
 #define SCTP_INP_INFO_WUNLOCK()	\
 	LeaveCriticalSection(&SCTP_BASE_INFO(ipi_ep_mtx))
+#define SCTP_INP_INFO_LOCK_ASSERT()
+#define SCTP_INP_INFO_RLOCK_ASSERT()
+#define SCTP_INP_INFO_WLOCK_ASSERT()
 
 #define SCTP_IP_PKTLOG_INIT() \
 	InitializeCriticalSection(&SCTP_BASE_INFO(ipi_pktlog_mtx))
@@ -198,6 +208,7 @@
 	EnterCriticalSection(&(_tcb)->tcb_send_mtx)
 #define SCTP_TCB_SEND_UNLOCK(_tcb) \
 	LeaveCriticalSection(&(_tcb)->tcb_send_mtx)
+#define SCTP_TCB_SEND_LOCK_ASSERT(_tcb)
 
 #define SCTP_INP_INCR_REF(_inp) atomic_add_int(&((_inp)->refcount), 1)
 #define SCTP_INP_DECR_REF(_inp) atomic_add_int(&((_inp)->refcount), -1)
@@ -293,6 +304,12 @@
 #define SCTP_INP_INFO_WUNLOCK() \
 	(void)pthread_mutex_unlock(&SCTP_BASE_INFO(ipi_ep_mtx))
 #endif
+#define SCTP_INP_INFO_LOCK_ASSERT() \
+	KASSERT(pthread_mutex_trylock(&SCTP_BASE_INFO(ipi_ep_mtx)) == EBUSY, ("%s: ipi_ep_mtx not locked", __func__))
+#define SCTP_INP_INFO_RLOCK_ASSERT() \
+	KASSERT(pthread_mutex_trylock(&SCTP_BASE_INFO(ipi_ep_mtx)) == EBUSY, ("%s: ipi_ep_mtx not locked", __func__))
+#define SCTP_INP_INFO_WLOCK_ASSERT() \
+	KASSERT(pthread_mutex_trylock(&SCTP_BASE_INFO(ipi_ep_mtx)) == EBUSY, ("%s: ipi_ep_mtx not locked", __func__))
 #define SCTP_INP_INFO_TRYLOCK() \
 	(!(pthread_mutex_trylock(&SCTP_BASE_INFO(ipi_ep_mtx))))
 
@@ -405,6 +422,8 @@
 #define SCTP_TCB_SEND_UNLOCK(_tcb) \
 	(void)pthread_mutex_unlock(&(_tcb)->tcb_send_mtx)
 #endif
+#define SCTP_TCB_SEND_LOCK_ASSERT(_tcb) \
+	KASSERT(pthread_mutex_trylock(&(_tcb)->tcb_send_mtx) == EBUSY, ("%s: tcb_send_mtx not locked", __func__))
 
 #define SCTP_ASOC_CREATE_LOCK_INIT(_inp) \
 	(void)pthread_mutex_init(&(_inp)->inp_create_mtx, &SCTP_BASE_VAR(mtx_attr))

@@ -59,7 +59,17 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
+// The number of bytes to be sent out
+size_t g_bufferSize = 128 * 1024 * 1024;
 
+// What currently is getting sent out
+char *g_outgoingBuffer;
+
+// The total size of the outgoing buffer
+size_t g_outgoingBufferSize;
+
+// The number of bytes already sent
+size_t g_bytesSent;
 
 static int
 receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,

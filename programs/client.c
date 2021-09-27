@@ -60,7 +60,7 @@ typedef char* caddr_t;
 #endif
 
 // The number of bytes to be sent out as a single message
-const size_t g_number_of_bytes_to_send = 128 * 1024 * 1024;
+const size_t g_number_of_bytes_to_send = 128 * 1024;
 
 // Send out the bytes in a maximum of bytes per chunk
 const size_t g_chunk_size = 4 * 1024;

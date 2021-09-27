@@ -98,8 +98,6 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
 int
 send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
 {
-    printf("Can send %d bytes\n", sb_free);
-
     size_t numberOfBytesToSend = g_chunk_size < sb_free ? g_chunk_size : sb_free;
     size_t number_of_bytes_left_to_send = g_number_of_bytes_to_send - g_bytes_already_sent;
 
@@ -117,8 +115,11 @@ send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
     if (number_of_bytes_sent == -1) {
         perror("Could not send bytes");
     } else {
-        printf("Sent %zu bytes, completed %d\n", number_of_bytes_sent, (flags & MSG_EOR) != 0);
         g_bytes_already_sent += number_of_bytes_sent;
+        printf("*** Sent %zu bytes (%d available), completed %d\n",
+               number_of_bytes_sent,
+               sb_free,
+               (flags & MSG_EOR) != 0);
     }
 
     // not checked by caller

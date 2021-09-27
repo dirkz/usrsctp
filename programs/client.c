@@ -188,6 +188,12 @@ main(int argc, char *argv[])
 			perror("setsockopt");
 		}
 	}
+
+    g_outgoing_buffer = malloc(g_number_of_bytes_to_send);
+    if (!g_outgoing_buffer) {
+        perror("could not malloc outgoing buffer");
+    }
+
 	memset((void *)&addr4, 0, sizeof(struct sockaddr_in));
 	memset((void *)&addr6, 0, sizeof(struct sockaddr_in6));
 #ifdef HAVE_SIN_LEN
@@ -307,11 +313,6 @@ main(int argc, char *argv[])
 		printf(".\n");
 		usrsctp_freepaddrs(addrs);
 	}
-
-    g_outgoing_buffer = malloc(g_number_of_bytes_to_send);
-    if (!g_outgoing_buffer) {
-        perror("could not malloc outgoing buffer");
-    }
 
     for (size_t index = 0; i < g_number_of_bytes_to_send; i++) {
         g_outgoing_buffer[index] = rand();

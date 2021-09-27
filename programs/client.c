@@ -114,8 +114,12 @@ send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
                                                  0,
                                                  SCTP_SENDV_NOINFO,
                                                  flags);
-    printf("Sent %zu bytes, completed %d\n", number_of_bytes_sent, (flags & MSG_EOR) != 0);
-    g_bytes_already_sent += number_of_bytes_sent;
+    if (number_of_bytes_sent == -1) {
+        perror("Could not send bytes");
+    } else {
+        printf("Sent %zu bytes, completed %d\n", number_of_bytes_sent, (flags & MSG_EOR) != 0);
+        g_bytes_already_sent += number_of_bytes_sent;
+    }
 
     // not checked by caller
     return 1;

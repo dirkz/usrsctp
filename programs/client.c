@@ -62,6 +62,9 @@ typedef char* caddr_t;
 // The number of bytes to be sent out as a single message
 const size_t g_numberOfBytesToSend = 128 * 1024 * 1024;
 
+// Send out the bytes in a maximum of bytes per chunk
+const size_t g_chunkSize = 4 * 1024 * 1024;
+
 // What currently is getting sent out
 char *g_outgoingBuffer;
 
@@ -93,6 +96,32 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
 		free(data);
 	}
 	return (1);
+}
+
+int
+send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
+{
+    printf("Can send %d bytes\n", sb_free);
+
+    size_t numberOfBytesToSend = g_chunkSize < sb_free ? g_chunkSize : sb_free;
+    size_t number_of_bytes_left_to_send = g_numberOfBytesToSend - g_bytesSent;
+
+    int flags = numberOfBytesToSend >= number_of_bytes_left_to_send ? MSG_EOR : 0;
+
+    size_t number_of_bytes_sent = usrsctp_sendv(sock,
+                                                g_outgoingBuffer + g_bytesSent,
+                                                numberOfBytesToSend,
+                                                NULL,
+                                                0,
+                                                NULL,
+                                                0,
+                                                SCTP_SENDV_NOINFO,
+                                                flags);
+    printf("Sent %zu bytes, completed %d\n", number_of_bytes_sent, (flags & MSG_EOR) != 0);
+    g_bytesSent += number_of_bytes_sent;
+
+    // not checked by caller
+    return 1;
 }
 
 int

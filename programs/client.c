@@ -284,6 +284,10 @@ main(int argc, char *argv[])
         perror("could not malloc outgoing buffer");
     }
 
+    for (size_t index = 0; i < g_numberOfBytesToSend; i++) {
+        g_outgoingBuffer[index] = rand();
+    }
+
     while ((fgets(buffer, sizeof(buffer), stdin) != NULL) && !done) {
 		usrsctp_sendv(sock, buffer, strlen(buffer), NULL, 0, NULL, 0, SCTP_SENDV_NOINFO, 0);
 	}

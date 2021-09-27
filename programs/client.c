@@ -59,8 +59,8 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
-// The number of bytes to be sent out
-size_t g_bufferSize = 128 * 1024 * 1024;
+// The number of bytes to be sent out as a single message
+const size_t g_numberOfBytesToSend = 128 * 1024 * 1024;
 
 // What currently is getting sent out
 char *g_outgoingBuffer;

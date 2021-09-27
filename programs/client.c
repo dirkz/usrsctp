@@ -193,6 +193,11 @@ main(int argc, char *argv[])
     g_outgoing_buffer = malloc(g_number_of_bytes_to_send);
     if (!g_outgoing_buffer) {
         perror("could not malloc outgoing buffer");
+        exit(EXIT_FAILURE);
+    }
+
+    for (size_t index = 0; i < g_number_of_bytes_to_send; i++) {
+        g_outgoing_buffer[index] = rand();
     }
 
 	memset((void *)&addr4, 0, sizeof(struct sockaddr_in));
@@ -314,10 +319,6 @@ main(int argc, char *argv[])
 		printf(".\n");
 		usrsctp_freepaddrs(addrs);
 	}
-
-    for (size_t index = 0; i < g_number_of_bytes_to_send; i++) {
-        g_outgoing_buffer[index] = rand();
-    }
 
     if (!done) {
 		if (usrsctp_shutdown(sock, SHUT_WR) < 0) {

@@ -105,15 +105,15 @@ send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
 
     int flags = numberOfBytesToSend >= number_of_bytes_left_to_send ? MSG_EOR : 0;
 
-    size_t number_of_bytes_sent = usrsctp_sendv(sock,
-                                                g_outgoing_buffer + g_bytes_already_sent,
-                                                numberOfBytesToSend,
-                                                NULL,
-                                                0,
-                                                NULL,
-                                                0,
-                                                SCTP_SENDV_NOINFO,
-                                                flags);
+    ssize_t number_of_bytes_sent = usrsctp_sendv(sock,
+                                                 g_outgoing_buffer + g_bytes_already_sent,
+                                                 numberOfBytesToSend,
+                                                 NULL,
+                                                 0,
+                                                 NULL,
+                                                 0,
+                                                 SCTP_SENDV_NOINFO,
+                                                 flags);
     printf("Sent %zu bytes, completed %d\n", number_of_bytes_sent, (flags & MSG_EOR) != 0);
     g_bytes_already_sent += number_of_bytes_sent;
 

@@ -65,14 +65,11 @@ const size_t g_number_of_bytes_to_send = 128 * 1024 * 1024;
 // Send out the bytes in a maximum of bytes per chunk
 const size_t g_chunk_size = 4 * 1024 * 1024;
 
-// What currently is getting sent out
+// The buffer to be sent out in chunks
 char *g_outgoing_buffer;
 
-// The total size of the outgoing buffer
-size_t g_outgoing_buffer_size;
-
 // The number of bytes already sent
-size_t g_bytes_already_sent;
+size_t g_bytes_already_sent = 0;
 
 static int
 receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,

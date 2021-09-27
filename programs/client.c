@@ -137,7 +137,6 @@ main(int argc, char *argv[])
 	uint16_t event_types[] = {SCTP_ASSOC_CHANGE,
 	                          SCTP_PEER_ADDR_CHANGE,
 	                          SCTP_SEND_FAILED_EVENT};
-	char buffer[80];
 	unsigned int i;
 	int n;
 
@@ -316,10 +315,6 @@ main(int argc, char *argv[])
     for (size_t index = 0; i < g_number_of_bytes_to_send; i++) {
         g_outgoing_buffer[index] = rand();
     }
-
-    while ((fgets(buffer, sizeof(buffer), stdin) != NULL) && !done) {
-		usrsctp_sendv(sock, buffer, strlen(buffer), NULL, 0, NULL, 0, SCTP_SENDV_NOINFO, 0);
-	}
 
     if (!done) {
 		if (usrsctp_shutdown(sock, SHUT_WR) < 0) {

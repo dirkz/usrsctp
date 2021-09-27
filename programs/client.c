@@ -278,10 +278,17 @@ main(int argc, char *argv[])
 		printf(".\n");
 		usrsctp_freepaddrs(addrs);
 	}
-	while ((fgets(buffer, sizeof(buffer), stdin) != NULL) && !done) {
+
+    g_outgoingBuffer = malloc(g_numberOfBytesToSend);
+    if (!g_outgoingBuffer) {
+        perror("could not malloc outgoing buffer");
+    }
+
+    while ((fgets(buffer, sizeof(buffer), stdin) != NULL) && !done) {
 		usrsctp_sendv(sock, buffer, strlen(buffer), NULL, 0, NULL, 0, SCTP_SENDV_NOINFO, 0);
 	}
-	if (!done) {
+
+    if (!done) {
 		if (usrsctp_shutdown(sock, SHUT_WR) < 0) {
 			perror("usrsctp_shutdown");
 		}

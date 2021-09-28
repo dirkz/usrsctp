@@ -162,12 +162,11 @@ main(int argc, char *argv[])
 	}
 
     const uint32_t explicit_EOR_on = 1;
-    int status = usrsctp_setsockopt(sock,
-                                    IPPROTO_SCTP,
-                                    SCTP_EXPLICIT_EOR,
-                                    &explicit_EOR_on,
-                                    sizeof(explicit_EOR_on));
-    if (status == -1) {
+    if (usrsctp_setsockopt(sock,
+                           IPPROTO_SCTP,
+                           SCTP_EXPLICIT_EOR,
+                           &explicit_EOR_on,
+                           sizeof(explicit_EOR_on))) {
         perror("could not set sockopt SCTP_EXPLICIT_EOR");
     }
 

@@ -176,20 +176,20 @@ main(int argc, char *argv[])
 	av.assoc_id = SCTP_ALL_ASSOC;
 	av.assoc_value = 47;
 
-    const uint32_t explicit_EOR_on = 1;
-    int status = usrsctp_setsockopt(sock,
-                                    IPPROTO_SCTP,
-                                    SCTP_EXPLICIT_EOR,
-                                    &explicit_EOR_on,
-                                    sizeof(explicit_EOR_on));
-    if (status == -1) {
-        perror("could not set sockopt SCTP_EXPLICIT_EOR");
-    }
-
 	if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_CONTEXT, (const void*)&av, (socklen_t)sizeof(struct sctp_assoc_value)) < 0) {
 		perror("usrsctp_setsockopt SCTP_CONTEXT");
 	}
-	if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_RECVRCVINFO, &on, sizeof(int)) < 0) {
+
+    const uint32_t explicit_EOR_on = 1;
+    if (usrsctp_setsockopt(sock,
+                           IPPROTO_SCTP,
+                           SCTP_EXPLICIT_EOR,
+                           &explicit_EOR_on,
+                           sizeof(explicit_EOR_on))) {
+        perror("could not set sockopt SCTP_EXPLICIT_EOR");
+    }
+
+    if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_RECVRCVINFO, &on, sizeof(int)) < 0) {
 		perror("usrsctp_setsockopt SCTP_RECVRCVINFO");
 	}
 	if (argc > 2) {

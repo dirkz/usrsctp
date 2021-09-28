@@ -176,7 +176,7 @@ main(int argc, char *argv[])
 	av.assoc_id = SCTP_ALL_ASSOC;
 	av.assoc_value = 47;
 
-    const int explicit_EOR_on = 1;
+    const uint32_t explicit_EOR_on = 1;
     int status = usrsctp_setsockopt(sock,
                                     IPPROTO_SCTP,
                                     SCTP_EXPLICIT_EOR,

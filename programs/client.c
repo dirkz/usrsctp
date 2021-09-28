@@ -160,7 +160,18 @@ main(int argc, char *argv[])
 	if ((sock = usrsctp_socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP, receive_cb, send_cb, 0, NULL)) == NULL) {
 		perror("usrsctp_socket");
 	}
-	memset(&event, 0, sizeof(event));
+
+    const int explicit_EOR_on = 1;
+    int status = usrsctp_setsockopt(sock,
+                                    IPPROTO_SCTP,
+                                    SCTP_EXPLICIT_EOR,
+                                    &explicit_EOR_on,
+                                    sizeof(explicit_EOR_on));
+    if (status == -1) {
+        perror("could not set sockopt SCTP_EXPLICIT_EOR");
+    }
+
+    memset(&event, 0, sizeof(event));
 	event.se_assoc_id = SCTP_ALL_ASSOC;
 	event.se_on = 1;
 	for (i = 0; i < sizeof(event_types)/sizeof(uint16_t); i++) {

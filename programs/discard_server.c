@@ -57,7 +57,7 @@
 #define BUFFER_SIZE 10240
 #define SLEEP 1
 
-const int use_cb = 0;
+const int use_cb = 1;
 
 static int
 receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,

@@ -60,7 +60,7 @@ typedef char* caddr_t;
 #endif
 
 // Use the callback for sending
-const int use_cb = 0;
+const int use_cb = 1;
 
 // The number of bytes to be sent out as a single message
 const size_t g_number_of_bytes_to_send = 128 * 1024;

@@ -157,7 +157,17 @@ main(int argc, char *argv[])
 	if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_I_WANT_MAPPED_V4_ADDR, (const void*)&on, (socklen_t)sizeof(int)) < 0) {
 		perror("usrsctp_setsockopt SCTP_I_WANT_MAPPED_V4_ADDR");
 	}
-	memset(&av, 0, sizeof(struct sctp_assoc_value));
+
+    const uint32_t explicit_EOR_on = 1;
+    if (usrsctp_setsockopt(sock,
+                           IPPROTO_SCTP,
+                           SCTP_EXPLICIT_EOR,
+                           &explicit_EOR_on,
+                           sizeof(explicit_EOR_on))) {
+        perror("could not set sockopt SCTP_EXPLICIT_EOR");
+    }
+
+    memset(&av, 0, sizeof(struct sctp_assoc_value));
 	av.assoc_id = SCTP_ALL_ASSOC;
 	av.assoc_value = 47;
 

@@ -98,7 +98,6 @@ main(int argc, char *argv[])
 	uint16_t event_types[] = {SCTP_ASSOC_CHANGE,
 	                          SCTP_PEER_ADDR_CHANGE,
 	                          SCTP_SEND_FAILED_EVENT};
-	char buffer[80];
 	unsigned int i;
 	int n;
 
@@ -268,10 +267,38 @@ main(int argc, char *argv[])
 		printf(".\n");
 		usrsctp_freepaddrs(addrs);
 	}
-	while ((fgets(buffer, sizeof(buffer), stdin) != NULL) && !done) {
-		usrsctp_sendv(sock, buffer, strlen(buffer), NULL, 0, NULL, 0, SCTP_SENDV_NOINFO, 0);
+
+    const size_t total_buffer_size = 128 * 1024 * 1024;
+    const size_t chunk_size = 16 * 1024 * 1024;
+    char *buffer = malloc(total_buffer_size);
+    size_t bytes_written = 0;
+
+    while (bytes_written < total_buffer_size && !done) {
+        size_t total_bytes_left_to_write = total_buffer_size - bytes_written;
+        size_t bytes_to_write = total_bytes_left_to_write > chunk_size ? chunk_size : total_bytes_left_to_write;
+
+
+        size_t num_bytes = usrsctp_sendv(sock,
+                                         buffer + bytes_written,
+                                         bytes_to_write,
+                                         NULL,
+                                         0,
+                                         NULL,
+                                         0,
+                                         SCTP_SENDV_NOINFO,
+                                         0);
+
+        if (num_bytes < 0) {
+            perror("usrsctp_sendv");
+            exit(EXIT_FAILURE);
+        } else {
+            bytes_written += num_bytes;
+        }
 	}
-	if (!done) {
+
+    free(buffer);
+
+    if (!done) {
 		if (usrsctp_shutdown(sock, SHUT_WR) < 0) {
 			perror("usrsctp_shutdown");
 		}

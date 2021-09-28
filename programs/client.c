@@ -130,30 +130,41 @@ send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
 }
 
 void
-send_all(void)
+send_all(struct socket *sock)
 {
     size_t bytes_left_to_sent = g_number_of_bytes_to_send - g_bytes_already_sent;
 
     while (bytes_left_to_sent > 0) {
-        int flags = numberOfBytesToSend >= number_of_bytes_left_to_send ? MSG_EOR : 0;
-
         ssize_t number_of_bytes_sent = usrsctp_sendv(sock,
                                                      g_outgoing_buffer + g_bytes_already_sent,
-                                                     numberOfBytesToSend,
+                                                     bytes_left_to_sent,
                                                      NULL,
                                                      0,
                                                      NULL,
                                                      0,
                                                      SCTP_SENDV_NOINFO,
-                                                     flags);
+                                                     0);
         if (number_of_bytes_sent == -1) {
             perror("Could not send bytes");
         } else {
+            printf("*** Sent %zu bytes\n", number_of_bytes_sent);
             g_bytes_already_sent += number_of_bytes_sent;
-            printf("*** Sent %zu bytes (%d available), completed %d\n",
-                   number_of_bytes_sent,
-                   sb_free,
-                   (flags & MSG_EOR) != 0);
+            bytes_left_to_sent -= number_of_bytes_sent;
+
+            if (bytes_left_to_sent == 0) {
+                number_of_bytes_sent = usrsctp_sendv(sock,
+                                                     g_outgoing_buffer,
+                                                     0,
+                                                     NULL,
+                                                     0,
+                                                     NULL,
+                                                     0,
+                                                     SCTP_SENDV_NOINFO,
+                                                     MSG_EOR);
+            }
+            if (number_of_bytes_sent == -1) {
+                perror("Could not send final MSG_EOR");
+            }
         }
     }
 }
@@ -368,7 +379,7 @@ main(int argc, char *argv[])
 	}
 
     if (!use_cb) {
-        send_all();
+        send_all(sock);
     }
 
     if (!done) {

@@ -154,7 +154,18 @@ main(int argc, char *argv[])
 	if ((sock = usrsctp_socket(AF_INET6, SOCK_SEQPACKET, IPPROTO_SCTP, use_cb?receive_cb:NULL, NULL, 0, NULL)) == NULL) {
 		perror("usrsctp_socket");
 	}
-	if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_I_WANT_MAPPED_V4_ADDR, (const void*)&on, (socklen_t)sizeof(int)) < 0) {
+
+    const uint32_t explicit_EOR_on = 1;
+    if (usrsctp_setsockopt(sock,
+                           IPPROTO_SCTP,
+                           SCTP_EXPLICIT_EOR,
+                           &explicit_EOR_on,
+                           sizeof(explicit_EOR_on))) {
+        perror("usrsctp_setsockopt SCTP_EXPLICIT_EOR");
+    }
+
+
+    if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_I_WANT_MAPPED_V4_ADDR, (const void*)&on, (socklen_t)sizeof(int)) < 0) {
 		perror("usrsctp_setsockopt SCTP_I_WANT_MAPPED_V4_ADDR");
 	}
 	memset(&av, 0, sizeof(struct sctp_assoc_value));

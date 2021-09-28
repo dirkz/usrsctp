@@ -278,15 +278,15 @@ main(int argc, char *argv[])
         size_t bytes_to_write = total_bytes_left_to_write > chunk_size ? chunk_size : total_bytes_left_to_write;
 
 
-        size_t num_bytes = usrsctp_sendv(sock,
-                                         buffer + bytes_written,
-                                         bytes_to_write,
-                                         NULL,
-                                         0,
-                                         NULL,
-                                         0,
-                                         SCTP_SENDV_NOINFO,
-                                         0);
+        ssize_t num_bytes = usrsctp_sendv(sock,
+                                          buffer + bytes_written,
+                                          bytes_to_write,
+                                          NULL,
+                                          0,
+                                          NULL,
+                                          0,
+                                          SCTP_SENDV_NOINFO,
+                                          0);
 
         if (num_bytes < 0) {
             perror("usrsctp_sendv");

@@ -143,28 +143,13 @@ send_all(struct socket *sock)
                                                      NULL,
                                                      0,
                                                      SCTP_SENDV_NOINFO,
-                                                     0);
+                                                     MSG_EOR);
         if (number_of_bytes_sent == -1) {
             perror("Could not send bytes");
         } else {
             printf("*** Sent %zu bytes\n", number_of_bytes_sent);
             g_bytes_already_sent += number_of_bytes_sent;
             bytes_left_to_sent -= number_of_bytes_sent;
-
-            if (bytes_left_to_sent == 0) {
-                number_of_bytes_sent = usrsctp_sendv(sock,
-                                                     g_outgoing_buffer,
-                                                     0,
-                                                     NULL,
-                                                     0,
-                                                     NULL,
-                                                     0,
-                                                     SCTP_SENDV_NOINFO,
-                                                     MSG_EOR);
-            }
-            if (number_of_bytes_sent == -1) {
-                perror("Could not send final MSG_EOR");
-            }
         }
     }
 }

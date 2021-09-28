@@ -59,9 +59,6 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
-// Use the callback for sending
-const int use_cb = 0;
-
 // The number of bytes to be sent out as a single message
 const size_t g_number_of_bytes_to_send = 128 * 1024;
 
@@ -129,35 +126,6 @@ send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
     return 1;
 }
 
-void
-send_all(void)
-{
-    size_t bytes_left_to_sent = g_number_of_bytes_to_send - g_bytes_already_sent;
-
-    while (bytes_left_to_sent > 0) {
-        int flags = numberOfBytesToSend >= number_of_bytes_left_to_send ? MSG_EOR : 0;
-
-        ssize_t number_of_bytes_sent = usrsctp_sendv(sock,
-                                                     g_outgoing_buffer + g_bytes_already_sent,
-                                                     numberOfBytesToSend,
-                                                     NULL,
-                                                     0,
-                                                     NULL,
-                                                     0,
-                                                     SCTP_SENDV_NOINFO,
-                                                     flags);
-        if (number_of_bytes_sent == -1) {
-            perror("Could not send bytes");
-        } else {
-            g_bytes_already_sent += number_of_bytes_sent;
-            printf("*** Sent %zu bytes (%d available), completed %d\n",
-                   number_of_bytes_sent,
-                   sb_free,
-                   (flags & MSG_EOR) != 0);
-        }
-    }
-}
-
 int
 main(int argc, char *argv[])
 {
@@ -189,13 +157,8 @@ main(int argc, char *argv[])
 	usrsctp_sysctl_set_sctp_blackhole(2);
 	usrsctp_sysctl_set_sctp_no_csum_on_loopback(0);
 
-    if ((sock = usrsctp_socket(AF_INET6,
-                               SOCK_STREAM,
-                               IPPROTO_SCTP,
-                               receive_cb, use_cb ? send_cb : NULL,
-                               0,
-                               NULL)) == NULL) {
-        perror("usrsctp_socket");
+	if ((sock = usrsctp_socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP, receive_cb, send_cb, 0, NULL)) == NULL) {
+		perror("usrsctp_socket");
 	}
 
     const uint32_t explicit_EOR_on = 1;
@@ -366,10 +329,6 @@ main(int argc, char *argv[])
 		printf(".\n");
 		usrsctp_freepaddrs(addrs);
 	}
-
-    if (!use_cb) {
-        send_all();
-    }
 
     if (!done) {
 		if (usrsctp_shutdown(sock, SHUT_WR) < 0) {

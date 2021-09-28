@@ -62,11 +62,8 @@ typedef char* caddr_t;
 // Use the callback for sending
 const int use_cb = 1;
 
-// The number of bytes to be sent out as a single message
-const size_t g_number_of_bytes_to_send = 128 * 1024;
-
-// Send out the bytes in a maximum of bytes per chunk
-const size_t g_chunk_size = 4 * 1024;
+// The total number of bytes to be sent out as a single message
+const size_t g_total_bytes_to_send = 128 * 1024;
 
 // The buffer to be sent out in chunks
 char *g_outgoing_buffer;
@@ -101,28 +98,39 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
 int
 send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
 {
-    size_t numberOfBytesToSend = g_chunk_size < sb_free ? g_chunk_size : sb_free;
-    size_t number_of_bytes_left_to_send = g_number_of_bytes_to_send - g_bytes_already_sent;
+    size_t number_of_bytes_left_to_send = g_total_bytes_to_send - g_bytes_already_sent;
+    if (number_of_bytes_left_to_send > 0) {
+        size_t bytes_to_be_sent_now = number_of_bytes_left_to_send;
+        int flags = 0;
+        if (number_of_bytes_left_to_send <= sb_free) {
+            flags |= MSG_EOR;
+        } else {
+            bytes_to_be_sent_now = sb_free;
+        }
 
-    int flags = numberOfBytesToSend >= number_of_bytes_left_to_send ? MSG_EOR : 0;
+        ssize_t number_of_bytes_sent = usrsctp_sendv(sock,
+                                                     g_outgoing_buffer + g_bytes_already_sent,
+                                                     number_of_bytes_left_to_send,
+                                                     NULL,
+                                                     0,
+                                                     NULL,
+                                                     0,
+                                                     SCTP_SENDV_NOINFO,
+                                                     flags);
+        if (number_of_bytes_sent == -1) {
+            perror("Could not send bytes");
+        } else {
+            g_bytes_already_sent += number_of_bytes_sent;
+            printf("*** Sent %zu bytes (%d available), completed %d\n",
+                   number_of_bytes_sent,
+                   sb_free,
+                   (flags & MSG_EOR) != 0);
+        }
 
-    ssize_t number_of_bytes_sent = usrsctp_sendv(sock,
-                                                 g_outgoing_buffer + g_bytes_already_sent,
-                                                 numberOfBytesToSend,
-                                                 NULL,
-                                                 0,
-                                                 NULL,
-                                                 0,
-                                                 SCTP_SENDV_NOINFO,
-                                                 flags);
-    if (number_of_bytes_sent == -1) {
-        perror("Could not send bytes");
-    } else {
-        g_bytes_already_sent += number_of_bytes_sent;
-        printf("*** Sent %zu bytes (%d available), completed %d\n",
-               number_of_bytes_sent,
-               sb_free,
-               (flags & MSG_EOR) != 0);
+        size_t number_of_bytes_still_left_to_send = g_total_bytes_to_send - g_bytes_already_sent;
+        if (number_of_bytes_still_left_to_send == 0) {
+            done = 0;
+        }
     }
 
     // not checked by caller
@@ -132,7 +140,7 @@ send_cb(struct socket *sock, uint32_t sb_free, void *ulp_info)
 void
 send_all(struct socket *sock)
 {
-    size_t bytes_left_to_sent = g_number_of_bytes_to_send - g_bytes_already_sent;
+    size_t bytes_left_to_sent = g_total_bytes_to_send - g_bytes_already_sent;
 
     while (bytes_left_to_sent > 0) {
         ssize_t number_of_bytes_sent = usrsctp_sendv(sock,
@@ -233,13 +241,13 @@ main(int argc, char *argv[])
 		}
 	}
 
-    g_outgoing_buffer = malloc(g_number_of_bytes_to_send);
+    g_outgoing_buffer = malloc(g_total_bytes_to_send);
     if (!g_outgoing_buffer) {
         perror("could not malloc outgoing buffer");
         exit(EXIT_FAILURE);
     }
 
-    for (size_t index = 0; i < g_number_of_bytes_to_send; i++) {
+    for (size_t index = 0; i < g_total_bytes_to_send; i++) {
         g_outgoing_buffer[index] = rand();
     }
 

@@ -293,11 +293,11 @@ main(int argc, char *argv[])
                                           sizeof(send_info),
                                           SCTP_SENDV_SNDINFO,
                                           0);
-
         if (num_bytes < 0) {
             perror("usrsctp_sendv");
             exit(EXIT_FAILURE);
         } else {
+            printf("Wrote %zd bytes, SCTP_EOR %d\n", num_bytes, (send_info.snd_flags & SCTP_EOR) != 0);
             bytes_written += num_bytes;
         }
 	}

@@ -300,7 +300,7 @@ main(int argc, char *argv[])
             printf("Wrote %zd bytes, SCTP_EOR %d\n", num_bytes, (send_info.snd_flags & SCTP_EOR) != 0);
             bytes_written += num_bytes;
         }
-	}
+    }
 
     free(buffer);
 

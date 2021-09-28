@@ -276,9 +276,13 @@ main(int argc, char *argv[])
     while (bytes_written < total_buffer_size && !done) {
         size_t total_bytes_left_to_write = total_buffer_size - bytes_written;
         size_t bytes_to_write = total_bytes_left_to_write > chunk_size ? chunk_size : total_bytes_left_to_write;
+        int is_last_chunk = bytes_to_write < total_bytes_left_to_write;
 
         struct sctp_sndinfo send_info;
         memset(&send_info, 0, sizeof(send_info));
+        if (is_last_chunk) {
+            send_info.snd_flags |= SCTP_EOR;
+        }
 
         ssize_t num_bytes = usrsctp_sendv(sock,
                                           buffer + bytes_written,

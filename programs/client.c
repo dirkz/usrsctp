@@ -268,8 +268,8 @@ main(int argc, char *argv[])
 		usrsctp_freepaddrs(addrs);
 	}
 
-    const size_t total_buffer_size = 128 * 1024 * 1024;
-    const size_t chunk_size = 16 * 1024 * 1024;
+    const size_t total_buffer_size = 128 * 1024;
+    const size_t chunk_size = 16 * 1024;
     char *buffer = malloc(total_buffer_size);
     size_t bytes_written = 0;
 

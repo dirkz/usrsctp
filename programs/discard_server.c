@@ -100,7 +100,7 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
 				port = 0;
 				break;
 			}
-			printf("Msg of length %d received from %s:%u on stream %u with SSN %u and TSN %u, PPID %u, context %u.\n",
+			printf("Msg of length %d received from %s:%u on stream %u with SSN %u and TSN %u, PPID %u, context %u, completed %d.\n",
 			       (int)datalen,
 			       name,
 			       port,
@@ -108,7 +108,8 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
 			       rcv.rcv_ssn,
 			       rcv.rcv_tsn,
 			       (uint32_t)ntohl(rcv.rcv_ppid),
-			       rcv.rcv_context);
+			       rcv.rcv_context,
+                   (flags & MSG_EOR) ? 1 : 0);
 		}
 		free(data);
 	}

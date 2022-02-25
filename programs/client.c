@@ -178,7 +178,6 @@ main(int argc, char *argv[])
 	uint16_t event_types[] = {SCTP_ASSOC_CHANGE,
 	                          SCTP_PEER_ADDR_CHANGE,
 	                          SCTP_SEND_FAILED_EVENT};
-	char buffer[80];
 	unsigned int i;
 	int n;
 
@@ -348,15 +347,14 @@ main(int argc, char *argv[])
 		printf(".\n");
 		usrsctp_freepaddrs(addrs);
 	}
-	while ((fgets(buffer, sizeof(buffer), stdin) != NULL) && !done) {
-		usrsctp_sendv(sock, buffer, strlen(buffer), NULL, 0, NULL, 0, SCTP_SENDV_NOINFO, 0);
-	}
-	if (!done) {
+
+    if (!done) {
 		if (usrsctp_shutdown(sock, SHUT_WR) < 0) {
 			perror("usrsctp_shutdown");
 		}
 	}
-	while (!done) {
+
+    while (!done) {
 #ifdef _WIN32
 		Sleep(1 * 1000);
 #else

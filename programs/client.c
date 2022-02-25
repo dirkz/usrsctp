@@ -53,10 +53,6 @@
 #include <usrsctp.h>
 #include "programs_helper.h"
 
-#ifdef __linux__
-#include <bsd/stdlib.h> // arc4random for linux
-#endif
-
 int done = 0;
 
 #ifdef _WIN32
@@ -72,14 +68,14 @@ random_data(char **buffer)
 {
     uint32_t dataLengthKb = 0;
     do {
-        dataLengthKb = arc4random() % (10 * 1024);
+        dataLengthKb = rand() % (10 * 1024);
     } while (dataLengthKb == 0);
 
     uint32_t dataLength = dataLengthKb * 1024;
     *buffer = malloc(dataLength);
 
     for (uint32_t i = 0; i < dataLength; ++i) {
-        (*buffer)[i] = (char) arc4random();
+        (*buffer)[i] = (char) rand();
     }
 
     return dataLength;

@@ -53,6 +53,10 @@
 #include <usrsctp.h>
 #include "programs_helper.h"
 
+#ifdef __linux__
+#include <bsd/stdlib.h> // arc4random for linux
+#endif
+
 int done = 0;
 
 #ifdef _WIN32

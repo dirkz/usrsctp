@@ -80,6 +80,13 @@ static const char *randomData(void)
     return buffer;
 }
 
+static int send_cb(struct socket *sock,
+                   uint32_t sb_free,
+                   void *ulp_info)
+{
+    return 1;
+}
+
 static int
 receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
            size_t datalen, struct sctp_rcvinfo rcv, int flags, void *ulp_info)

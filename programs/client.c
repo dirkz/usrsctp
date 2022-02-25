@@ -64,6 +64,7 @@ typedef char* caddr_t;
 #endif
 
 uint32_t num_bytes_left_to_send = 0;
+uint32_t buffer_length = 0;
 char *buffer_to_send = NULL;
 
 static uint32_t
@@ -89,6 +90,35 @@ send_cb(struct socket *sock,
         uint32_t sb_free,
         void *ulp_info)
 {
+    uint32_t max_num_bytes_to_send = sb_free;
+    if (max_num_bytes_to_send > num_bytes_left_to_send) {
+        max_num_bytes_to_send = num_bytes_left_to_send;
+    }
+
+    int could_be_last = max_num_bytes_to_send > num_bytes_left_to_send;
+
+    struct sctp_sndinfo send_info;
+    memset(&send_info, 0, sizeof(send_info));
+    if (could_be_last) {
+        send_info.snd_flags |= SCTP_EOR;
+    }
+
+    ssize_t num_bytes = usrsctp_sendv(sock,
+                                      buffer_to_send + buffer_length - num_bytes_left_to_send,
+                                      max_num_bytes_to_send,
+                                      NULL,
+                                      0,
+                                      &send_info,
+                                      sizeof(send_info),
+                                      SCTP_SENDV_SNDINFO,
+                                      0);
+
+    if (num_bytes < 0) {
+        fprintf(STDERR_FILENO, "*** could not send\n");
+    } else {
+        num_bytes_left_to_send -= num_bytes;
+    }
+
     return 1;
 }
 

@@ -63,7 +63,22 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
+static const char *randomData(void)
+{
+    uint32_t dataLengthKb = 0;
+    do {
+        dataLengthKb = arc4random() % (10 * 1024);
+    } while (dataLengthKb == 0);
 
+    uint32_t dataLength = dataLengthKb * 1024;
+    char *buffer = malloc(dataLength);
+
+    for (uint32_t i = 0; i < dataLength; ++i) {
+        buffer[i] = arc4random();
+    }
+
+    return buffer;
+}
 
 static int
 receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,

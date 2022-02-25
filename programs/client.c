@@ -85,11 +85,30 @@ randomData(char **buffer)
     return dataLength;
 }
 
+static void
+allow_new_buffer()
+{
+    if (num_bytes_left_to_send == 0) {
+        if (buffer_to_send) {
+            free(buffer_to_send);
+        }
+    }
+
+    num_bytes_left_to_send = randomData(&buffer_to_send);
+
+    if (num_bytes_left_to_send == 0 || buffer_to_send == NULL) {
+        fprintf(STDERR_FILENO, "*** could not allocate next buffer");
+        exit(9);
+    }
+}
+
 static int
 send_cb(struct socket *sock,
         uint32_t sb_free,
         void *ulp_info)
 {
+    allow_new_buffer();
+
     uint32_t max_num_bytes_to_send = sb_free;
     if (max_num_bytes_to_send > num_bytes_left_to_send) {
         max_num_bytes_to_send = num_bytes_left_to_send;

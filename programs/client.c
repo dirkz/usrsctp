@@ -63,8 +63,8 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
-static const char *
-randomData(void)
+static uint32_t
+randomData(char **buffer)
 {
     uint32_t dataLengthKb = 0;
     do {
@@ -72,13 +72,13 @@ randomData(void)
     } while (dataLengthKb == 0);
 
     uint32_t dataLength = dataLengthKb * 1024;
-    char *buffer = malloc(dataLength);
+    *buffer = malloc(dataLength);
 
     for (uint32_t i = 0; i < dataLength; ++i) {
         buffer[i] = arc4random();
     }
 
-    return buffer;
+    return dataLength;
 }
 
 static int

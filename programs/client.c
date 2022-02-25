@@ -97,7 +97,7 @@ allow_new_buffer(void)
     num_bytes_left_to_send = random_data(&buffer_to_send);
 
     if (num_bytes_left_to_send == 0 || buffer_to_send == NULL) {
-        fprintf(STDERR_FILENO, "*** could not allocate next buffer");
+        fprintf(stderr, "*** could not allocate next buffer");
         exit(9);
     }
 }
@@ -133,7 +133,7 @@ send_cb(struct socket *sock,
                                       0);
 
     if (num_bytes < 0) {
-        fprintf(STDERR_FILENO, "*** could not send\n");
+        fprintf(stderr, "*** could not send\n");
     } else {
         num_bytes_left_to_send -= num_bytes;
     }

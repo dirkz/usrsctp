@@ -63,7 +63,8 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
-static const char *randomData(void)
+static const char *
+randomData(void)
 {
     uint32_t dataLengthKb = 0;
     do {
@@ -80,9 +81,10 @@ static const char *randomData(void)
     return buffer;
 }
 
-static int send_cb(struct socket *sock,
-                   uint32_t sb_free,
-                   void *ulp_info)
+static int
+send_cb(struct socket *sock,
+        uint32_t sb_free,
+        void *ulp_info)
 {
     return 1;
 }

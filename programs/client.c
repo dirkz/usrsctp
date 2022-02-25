@@ -63,8 +63,8 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
-uint32_t num_bytes_left_to_send = 0;
-uint32_t buffer_length = 0;
+size_t num_bytes_left_to_send = 0;
+size_t buffer_length = 0;
 char *buffer_to_send = NULL;
 
 static uint32_t

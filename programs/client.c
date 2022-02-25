@@ -79,7 +79,7 @@ random_data(char **buffer)
     *buffer = malloc(dataLength);
 
     for (uint32_t i = 0; i < dataLength; ++i) {
-        buffer[i] = (char) arc4random();
+        (*buffer)[i] = (char) arc4random();
     }
 
     return dataLength;

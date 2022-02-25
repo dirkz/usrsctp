@@ -68,7 +68,7 @@ size_t buffer_length = 0;
 char *buffer_to_send = NULL;
 
 static uint32_t
-randomData(char **buffer)
+random_data(char **buffer)
 {
     uint32_t dataLengthKb = 0;
     do {
@@ -94,7 +94,7 @@ allow_new_buffer()
         }
     }
 
-    num_bytes_left_to_send = randomData(&buffer_to_send);
+    num_bytes_left_to_send = random_data(&buffer_to_send);
 
     if (num_bytes_left_to_send == 0 || buffer_to_send == NULL) {
         fprintf(STDERR_FILENO, "*** could not allocate next buffer");

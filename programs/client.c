@@ -86,7 +86,7 @@ random_data(char **buffer)
 }
 
 static void
-allow_new_buffer()
+allow_new_buffer(void)
 {
     if (num_bytes_left_to_send == 0) {
         if (buffer_to_send) {

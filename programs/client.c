@@ -149,8 +149,8 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
            size_t datalen, struct sctp_rcvinfo rcv, int flags, void *ulp_info)
 {
 	if (data == NULL) {
-		done = 1;
-		usrsctp_close(sock);
+        // log, but otherwise ignore and continue
+        printf("*** NULL data, ignore\n");
 	} else {
 		if (flags & MSG_NOTIFICATION) {
 			handle_notification((union sctp_notification *)data, datalen);

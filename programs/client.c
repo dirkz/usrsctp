@@ -59,8 +59,8 @@ int done = 0;
 typedef char* caddr_t;
 #endif
 
-size_t num_bytes_left_to_send = 0;
-size_t buffer_length = 0;
+size_t num_sent = 0;
+size_t buffer_to_send_length = 0;
 char *buffer_to_send = NULL;
 
 static uint32_t
@@ -84,16 +84,18 @@ random_data(char **buffer)
 static void
 allow_new_buffer(void)
 {
-    if (num_bytes_left_to_send == 0) {
-        if (buffer_to_send) {
-            free(buffer_to_send);
-        }
+    if (num_sent != buffer_to_send_length) {
+        return;
     }
 
-    num_bytes_left_to_send = random_data(&buffer_to_send);
-    buffer_length = num_bytes_left_to_send;
+    if (buffer_to_send) {
+        free(buffer_to_send);
+    }
 
-    if (num_bytes_left_to_send == 0 || buffer_to_send == NULL) {
+    buffer_to_send_length = random_data(&buffer_to_send);
+    num_sent = 0;
+
+    if (buffer_to_send_length == 0 || buffer_to_send == NULL) {
         fprintf(stderr, "*** could not allocate next buffer");
         exit(9);
     }
@@ -106,12 +108,16 @@ send_cb(struct socket *sock,
 {
     allow_new_buffer();
 
-    uint32_t max_num_bytes_to_send = sb_free;
-    if (max_num_bytes_to_send > num_bytes_left_to_send) {
-        max_num_bytes_to_send = num_bytes_left_to_send;
-    }
+    size_t max_num_bytes_to_send = buffer_to_send_length - num_sent;
 
-    int could_be_last = max_num_bytes_to_send > num_bytes_left_to_send;
+    int could_be_last = 0;
+
+    if (max_num_bytes_to_send > sb_free) {
+        max_num_bytes_to_send = sb_free;
+        could_be_last = 0;
+    } else {
+        could_be_last = 1;
+    }
 
     struct sctp_sndinfo send_info;
     memset(&send_info, 0, sizeof(send_info));
@@ -120,7 +126,7 @@ send_cb(struct socket *sock,
     }
 
     ssize_t num_bytes = usrsctp_sendv(sock,
-                                      buffer_to_send + buffer_length - num_bytes_left_to_send,
+                                      buffer_to_send + buffer_to_send_length - num_sent,
                                       max_num_bytes_to_send,
                                       NULL,
                                       0,
@@ -132,7 +138,7 @@ send_cb(struct socket *sock,
     if (num_bytes < 0) {
         fprintf(stderr, "*** could not send\n");
     } else {
-        num_bytes_left_to_send -= num_bytes;
+        num_sent -= num_bytes;
     }
 
     return 1;

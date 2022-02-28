@@ -328,6 +328,9 @@ handle_send_failed_event(struct sctp_send_failed_event *ssfe)
 	       (uint32_t)ntohl(ssfe->ssfe_info.snd_ppid), ssfe->ssfe_info.snd_sid,
 	       ssfe->ssfe_info.snd_flags, ssfe->ssfe_error);
 	n = ssfe->ssfe_length - sizeof(struct sctp_send_failed_event);
+    if (n > 10) {
+        n = 10;
+    }
 	for (i = 0; i < n; i++) {
 		fprintf(debug_target, " 0x%02x", ssfe->ssfe_data[i]);
 	}

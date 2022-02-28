@@ -164,7 +164,6 @@ main(int argc, char *argv[])
 	av.assoc_value = 47;
 
     // Always require explicit message demarcation
-    const int on = 1;
     if (usrsctp_setsockopt(sock,
                            IPPROTO_SCTP,
                            SCTP_EXPLICIT_EOR,

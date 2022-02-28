@@ -163,7 +163,17 @@ main(int argc, char *argv[])
 	av.assoc_id = SCTP_ALL_ASSOC;
 	av.assoc_value = 47;
 
-	if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_CONTEXT, (const void*)&av, (socklen_t)sizeof(struct sctp_assoc_value)) < 0) {
+    // Always require explicit message demarcation
+    const int on = 1;
+    if (usrsctp_setsockopt(sock,
+                           IPPROTO_SCTP,
+                           SCTP_EXPLICIT_EOR,
+                           (const void *) &on,
+                           (socklen_t) sizeof(on)) < 0) {
+        perror("could not set SCTP_EXPLICIT_EOR");
+    }
+
+    if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_CONTEXT, (const void*)&av, (socklen_t)sizeof(struct sctp_assoc_value)) < 0) {
 		perror("usrsctp_setsockopt SCTP_CONTEXT");
 	}
 	if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_RECVRCVINFO, &on, sizeof(int)) < 0) {

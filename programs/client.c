@@ -203,7 +203,18 @@ main(int argc, char *argv[])
 	if ((sock = usrsctp_socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP, receive_cb, send_cb, 0, NULL)) == NULL) {
 		perror("usrsctp_socket");
 	}
-	memset(&event, 0, sizeof(event));
+
+    // Always require explicit message demarcation
+    const int on = 1;
+    if (usrsctp_setsockopt(sock,
+                           IPPROTO_SCTP,
+                           SCTP_EXPLICIT_EOR,
+                           (const void *) &on,
+                           (socklen_t) sizeof(on)) < 0) {
+        perror("could not set SCTP_EXPLICIT_EOR");
+    }
+
+    memset(&event, 0, sizeof(event));
 	event.se_assoc_id = SCTP_ALL_ASSOC;
 	event.se_on = 1;
 	for (i = 0; i < sizeof(event_types)/sizeof(uint16_t); i++) {

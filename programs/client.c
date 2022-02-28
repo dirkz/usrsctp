@@ -108,6 +108,11 @@ send_cb(struct socket *sock,
         uint32_t sb_free,
         void *ulp_info)
 {
+    if (sb_free < 1) {
+        printf("*** message client sendCbSock with sbFree %d, ignore", sb_free);
+        return 1;
+    }
+
     allow_new_buffer();
 
     size_t max_num_bytes_to_send = buffer_to_send_length - num_sent;
@@ -140,7 +145,7 @@ send_cb(struct socket *sock,
 
     if (num_bytes < 0) {
         // ignore, happens quite a lot
-        //fprintf(stderr, "*** could not send\n");
+        fprintf(stderr, "*** could not send\n");
     } else {
         num_sent += num_bytes;
         printf("*** sent %zd bytes\n", num_bytes);

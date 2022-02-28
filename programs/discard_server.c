@@ -69,7 +69,7 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
 
 	if (data) {
 		if (flags & MSG_NOTIFICATION) {
-			printf("Notification of length %d received.\n", (int)datalen);
+            handle_notification((union sctp_notification *)data, datalen);
 		} else {
 			switch (addr.sa.sa_family) {
 #ifdef INET

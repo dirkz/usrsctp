@@ -126,7 +126,7 @@ send_cb(struct socket *sock,
     }
 
     ssize_t num_bytes = usrsctp_sendv(sock,
-                                      buffer_to_send + buffer_to_send_length - num_sent,
+                                      buffer_to_send + num_sent,
                                       max_num_bytes_to_send,
                                       NULL,
                                       0,
@@ -138,7 +138,7 @@ send_cb(struct socket *sock,
     if (num_bytes < 0) {
         fprintf(stderr, "*** could not send\n");
     } else {
-        num_sent -= num_bytes;
+        num_sent += num_bytes;
     }
 
     return 1;

@@ -141,7 +141,7 @@ main(int argc, char *argv[])
 	unsigned int infotype;
 
 	if (argc > 1) {
-        printf("*** encapsulation port %d\n", atoi(argv[1]));
+        printf("*** local encapsulation port %d\n", atoi(argv[1]));
 		usrsctp_init(atoi(argv[1]), NULL, debug_printf_stack);
 	} else {
 		usrsctp_init(9899, NULL, debug_printf_stack);

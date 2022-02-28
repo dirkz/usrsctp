@@ -189,7 +189,7 @@ main(int argc, char *argv[])
 		return (-1);
 	}
 	if (argc > 4) {
-        printf("*** encapsulation port %d\n", atoi(argv[4]));
+        printf("*** local encapsulation port %d\n", atoi(argv[4]));
 		usrsctp_init(atoi(argv[4]), NULL, debug_printf_stack);
 	} else {
 		usrsctp_init(9899, NULL, debug_printf_stack);

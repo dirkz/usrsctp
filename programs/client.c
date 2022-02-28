@@ -383,12 +383,6 @@ main(int argc, char *argv[])
 		usrsctp_freepaddrs(addrs);
 	}
 
-    if (!done) {
-		if (usrsctp_shutdown(sock, SHUT_WR) < 0) {
-			perror("usrsctp_shutdown");
-		}
-	}
-
     while (!done) {
 #ifdef _WIN32
 		Sleep(1 * 1000);

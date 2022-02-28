@@ -210,7 +210,7 @@ main(int argc, char *argv[])
 	usrsctp_sysctl_set_sctp_blackhole(2);
 	usrsctp_sysctl_set_sctp_no_csum_on_loopback(0);
 
-	if ((sock = usrsctp_socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP, receive_cb, send_cb, 0, NULL)) == NULL) {
+	if ((sock = usrsctp_socket(AF_INET6, SOCK_STREAM, IPPROTO_SCTP, receive_cb, send_cb, 0, NULL)) == NULL) {
 		perror("usrsctp_socket");
 	}
 

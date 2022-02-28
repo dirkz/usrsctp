@@ -99,6 +99,8 @@ allow_new_buffer(void)
         fprintf(stderr, "*** could not allocate next buffer");
         exit(9);
     }
+
+    printf("*** new buffer of %zu bytes\n", buffer_to_send_length);
 }
 
 static int
@@ -140,6 +142,7 @@ send_cb(struct socket *sock,
         //fprintf(stderr, "*** could not send\n");
     } else {
         num_sent += num_bytes;
+        printf("*** sent %zd bytes\n", num_bytes);
     }
 
     return 1;

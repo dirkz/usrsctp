@@ -141,6 +141,7 @@ main(int argc, char *argv[])
 	unsigned int infotype;
 
 	if (argc > 1) {
+        printf("*** encapsulation port %d\n", atoi(argv[1]));
 		usrsctp_init(atoi(argv[1]), NULL, debug_printf_stack);
 	} else {
 		usrsctp_init(9899, NULL, debug_printf_stack);
@@ -171,6 +172,7 @@ main(int argc, char *argv[])
 		memset(&encaps, 0, sizeof(struct sctp_udpencaps));
 		encaps.sue_address.ss_family = AF_INET6;
 		encaps.sue_port = htons(atoi(argv[2]));
+        printf("*** remote encapsulation port %d\n", encaps.sue_port);
 		if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_REMOTE_UDP_ENCAPS_PORT, (const void*)&encaps, (socklen_t)sizeof(struct sctp_udpencaps)) < 0) {
 			perror("usrsctp_setsockopt SCTP_REMOTE_UDP_ENCAPS_PORT");
 		}

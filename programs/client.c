@@ -189,6 +189,7 @@ main(int argc, char *argv[])
 		return (-1);
 	}
 	if (argc > 4) {
+        printf("*** encapsulation port %d\n", atoi(argv[4]));
 		usrsctp_init(atoi(argv[4]), NULL, debug_printf_stack);
 	} else {
 		usrsctp_init(9899, NULL, debug_printf_stack);
@@ -218,6 +219,7 @@ main(int argc, char *argv[])
 #endif
 		addr6.sin6_family = AF_INET6;
 		addr6.sin6_port = htons(atoi(argv[3]));
+        printf("*** bound to local port %d\n", atoi(argv[3]));
 		addr6.sin6_addr = in6addr_any;
 		if (usrsctp_bind(sock, (struct sockaddr *)&addr6, sizeof(struct sockaddr_in6)) < 0) {
 			perror("bind");
@@ -227,6 +229,7 @@ main(int argc, char *argv[])
 		memset(&encaps, 0, sizeof(struct sctp_udpencaps));
 		encaps.sue_address.ss_family = AF_INET6;
 		encaps.sue_port = htons(atoi(argv[5]));
+        printf("*** remote encapsulation port %d\n", encaps.sue_port);
 		if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_REMOTE_UDP_ENCAPS_PORT, (const void*)&encaps, (socklen_t)sizeof(struct sctp_udpencaps)) < 0) {
 			perror("setsockopt");
 		}

@@ -109,7 +109,7 @@ receive_cb(struct socket *sock, union sctp_sockstore addr, void *data,
 			       rcv.rcv_tsn,
 			       (uint32_t)ntohl(rcv.rcv_ppid),
 			       rcv.rcv_context,
-                   flags & MSG_EOR);
+                   flags & MSG_EOR != 0);
 		}
 		free(data);
 	}

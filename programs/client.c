@@ -91,6 +91,7 @@ allow_new_buffer(void)
     }
 
     num_bytes_left_to_send = random_data(&buffer_to_send);
+    buffer_length = num_bytes_left_to_send;
 
     if (num_bytes_left_to_send == 0 || buffer_to_send == NULL) {
         fprintf(stderr, "*** could not allocate next buffer");

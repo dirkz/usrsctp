@@ -136,7 +136,8 @@ send_cb(struct socket *sock,
                                       0);
 
     if (num_bytes < 0) {
-        fprintf(stderr, "*** could not send\n");
+        // ignore, happens quite a lot
+        //fprintf(stderr, "*** could not send\n");
     } else {
         num_sent += num_bytes;
     }

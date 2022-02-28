@@ -124,7 +124,7 @@ send_cb(struct socket *sock,
     struct sctp_sndinfo send_info;
     memset(&send_info, 0, sizeof(send_info));
     if (could_be_last) {
-        printf("*** trying to send last part of the message, %zu bytes\n", max_num_bytes_to_send);
+        //printf("*** trying to send last part of the message, %zu bytes\n", max_num_bytes_to_send);
         send_info.snd_flags |= SCTP_EOR;
     }
 

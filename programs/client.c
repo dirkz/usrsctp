@@ -219,6 +219,14 @@ main(int argc, char *argv[])
         perror("could not set SCTP_EXPLICIT_EOR");
     }
 
+    struct sctp_assoc_value av;
+    memset(&av, 0, sizeof(struct sctp_assoc_value));
+    av.assoc_id = SCTP_ALL_ASSOC;
+    av.assoc_value = 47;
+    if (usrsctp_setsockopt(sock, IPPROTO_SCTP, SCTP_CONTEXT, (const void*)&av, (socklen_t)sizeof(struct sctp_assoc_value)) < 0) {
+        perror("usrsctp_setsockopt SCTP_CONTEXT");
+    }
+
     memset(&event, 0, sizeof(event));
 	event.se_assoc_id = SCTP_ALL_ASSOC;
 	event.se_on = 1;
